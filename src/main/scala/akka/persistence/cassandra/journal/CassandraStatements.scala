@@ -3,9 +3,9 @@ package akka.persistence.cassandra.journal
 trait CassandraStatements {
   def config: CassandraJournalConfig
 
-  def createKeyspace = s"""
+  def createKeyspace(replicationFactor: Int) = s"""
       CREATE KEYSPACE IF NOT EXISTS ${config.keyspace}
-      WITH REPLICATION = { 'class' : ${config.replicationStrategy} }
+      WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : ${replicationFactor} }
     """
 
   def createTable = s"""
@@ -17,7 +17,6 @@ trait CassandraStatements {
         message blob,
         PRIMARY KEY ((processor_id, partition_nr), sequence_nr, marker))
         WITH COMPACT STORAGE
-         AND gc_grace_seconds =${config.gc_grace_seconds}
     """
 
   def writeHeader = s"""

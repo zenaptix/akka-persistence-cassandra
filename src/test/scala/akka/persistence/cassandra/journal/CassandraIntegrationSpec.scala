@@ -27,12 +27,10 @@ object CassandraIntegrationSpec {
     """.stripMargin)
 
   case class Delete(snr: Long, permanent: Boolean)
-
   case class DeleteTo(snr: Long, permanent: Boolean)
 
   class ProcessorA(val persistenceId: String) extends PersistentActor {
     def receiveRecover: Receive = handle
-
     def receiveCommand: Receive = {
       case Delete(sequenceNr, permanent) =>
         deleteMessage(sequenceNr, permanent)
@@ -41,7 +39,6 @@ object CassandraIntegrationSpec {
       case payload: String =>
         persist(payload)(handle)
     }
-
     def handle: Receive = {
       case payload: String =>
         sender ! payload
@@ -91,10 +88,8 @@ object CassandraIntegrationSpec {
     }
 
     override def autoUpdate: Boolean = false
-
     override def autoUpdateReplayMax: Long = 0
   }
-
 }
 
 import CassandraIntegrationSpec._
@@ -115,7 +110,7 @@ class CassandraIntegrationSpec extends TestKit(ActorSystem("test", config)) with
   def awaitRangeDeletion(probe: TestProbe): Unit =
     probe.expectMsgType[JournalProtocol.DeleteMessagesTo]
 
-  def testIndividualDelete(processorId: String, permanent: Boolean): Unit = {
+  def testIndividualDelete(processorId: String, permanent: Boolean) {
     val deleteProbe = TestProbe()
     subscribeToBatchDeletion(deleteProbe)
 
@@ -149,7 +144,7 @@ class CassandraIntegrationSpec extends TestKit(ActorSystem("test", config)) with
     }
   }
 
-  def testRangeDelete(processorId: String, permanent: Boolean): Unit = {
+  def testRangeDelete(processorId: String, permanent: Boolean) {
     val deleteProbe = TestProbe()
     subscribeToRangeDeletion(deleteProbe)
 
